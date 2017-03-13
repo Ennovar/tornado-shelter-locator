@@ -24,16 +24,11 @@ RSpec.describe SheltersController, type: :controller do
   # Shelter. As you add validations to Shelter, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    {
-      lat: 94.3,
-      lng: 34.3,
-      address: '2417 something ct',
-      description: 'make yourself at home'
-    }
+    FactoryGirl.attributes_for(:shelter)
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    { shelter: { address: "", city: "" } }
   }
 
   # This should return the minimal set of values that should be in the session
@@ -73,7 +68,7 @@ RSpec.describe SheltersController, type: :controller do
 
       it "redirects to the created shelter" do
         post :create, params: {shelter: valid_attributes}, session: valid_session
-        expect(response).to redirect_to(Shelter.last)
+        expect(response).to have_http_status(:created)
       end
     end
 
@@ -85,7 +80,7 @@ RSpec.describe SheltersController, type: :controller do
 
       it "re-renders the 'new' template" do
         post :create, params: {shelter: invalid_attributes}, session: valid_session
-        expect(response).to render_template("new")
+        expect(response).to have_http_status(422)
       end
     end
   end
@@ -112,7 +107,7 @@ RSpec.describe SheltersController, type: :controller do
       it "redirects to the shelter" do
         shelter = Shelter.create! valid_attributes
         put :update, params: {id: shelter.to_param, shelter: valid_attributes}, session: valid_session
-        expect(response).to redirect_to(shelter)
+        expect(response).to have_http_status(:success)
       end
     end
 
@@ -126,7 +121,7 @@ RSpec.describe SheltersController, type: :controller do
       it "re-renders the 'edit' template" do
         shelter = Shelter.create! valid_attributes
         put :update, params: {id: shelter.to_param, shelter: invalid_attributes}, session: valid_session
-        expect(response).to render_template("edit")
+        expect(response).to have_http_status(:success)
       end
     end
   end
@@ -142,7 +137,7 @@ RSpec.describe SheltersController, type: :controller do
     it "redirects to the shelters list" do
       shelter = Shelter.create! valid_attributes
       delete :destroy, params: {id: shelter.to_param}, session: valid_session
-      expect(response).to redirect_to(shelters_url)
+      expect(response).to have_http_status(:success)
     end
   end
 
